@@ -38,6 +38,7 @@ git clone [GITHUB URL]
 ```
 ### Step 3 – Configure Terraform
 
+> Terraform will configure the provisioning of Kubernetes Clusters, a Cloud SQL database and Metropolis compositions.  The GitHub configuration provided will be used to perform `git clone` within the CI pipeline in the compositions that Terraform makes.  
 
 Build a template for the `terraform.tfvars` by copying the example in place.
 
@@ -105,8 +106,24 @@ Alternatively, you can remove the quickstart DNS record configuration from the M
 
 Terraform will provision a CloudSQL instance with the user `metropolis` and the password you set in this file.  Change the `sql_user_password` field to be a unique and secure password for your installation.
 
+### Step 4 – Configure Metropolis Runtime Engine
 
-### Provision
+> Metropolis will need to be able to connect to a runtime engine to queue the jobs.  We will need to configure our Metropolis account to work in this environment.  These steps will configure Metropolis to Queue jobs on Google Cloud Platform's Cloud Build API.
+
+1. Visit the [Metropolis Account Dashboard](http://hellometropolis.com/alpha/account_dashboard).
+2. Create an account setting with the name `runtime-engine/gcp-project-id` and the value of your Google Cloud Platform Project for the jobs to run under.  It's usually easiest, to use the same project-id you used as a `project` in your `terraform.tfvars` file.
+3. Create an account setting with the name `runtime-engine/gcp-service-account` and include the JSON for a Google Cloud Platform Service Account that has permissions to queue jobs on CloudBuild.  It's usually easiest, to use the same contents as the `gcp-service-account.json` file.
+
+### Step 5 – Configure Metropolis Notification Engine
+
+> Metropolis will need to be able to connect to third party services in order to notify when builds start and builds finish.  We will use the GitHub deployment API for this.
+
+* Visit the [Metropolis GitHub Application](https://github.com/apps/hello-metropolis) and install the application to the `quickstart` repository you just forked.  This will allow Metropolis to use the `Deployment API` on behalf of your application when configured with GitHub's installation id.
+* Confirm the flow to set the `notification-engine/github-application-installation-id` account setting to the value of the github application id.
+
+### Step 6 – Test it out
+
+#### Provision Infrastructure
 
 Navigate to the `infrastructure/terraform` folder and run:
 
@@ -116,7 +133,24 @@ terraform apply
 
 And enter `yes` when prompted if this is correct.  This will provision your environment.
 
-### Teardown
+Wait for the terraform script to finish.
+
+#### Visit the Dashboard
+
+When you visit your Metropolis Dashboard you will see your Sandbox deployment running.  When the build finishes it will present with you the URL of the environment it just provisioned.
+
+#### Test a Change
+
+* Make a new branch
+* Make a simple change, for example change the `message` in the `backend/app/controllers/health_checks_controller.rb` to a different hardcoded value to make the JSON the API produces something else.
+* Push the new branch to GitHub
+* Make a new Pull Request.
+* Watch as Metropolis takes it from there and provisions a sandbox environment and updates GitHub.
+
+
+#### Teardown (optional)
+
+> You probably won't want these resources provisioned forever.  You can use terraform to remove them.
 
 ```
 state rm google_sql_user.users
