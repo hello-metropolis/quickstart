@@ -15,9 +15,9 @@ data "terraform_remote_state" "terraform-state" {
 }
 
 resource "google_dns_record_set" "custom-record" {
-  managed_zone = "hello-metropolis"
-  name = "${var.domain}."
-  type = "A"
-  ttl = 300
-  rrdatas = [var.ip_address]
+  managed_zone = var.managed_zone
+  name         = "${var.domain}."
+  type         = "A"
+  ttl          = 300
+  rrdatas      = [var.ip_address]
 }

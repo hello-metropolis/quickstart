@@ -21,7 +21,8 @@ zone                   = "us-west1-c"
 region                 = "us-west1"
 
 # Domain Configuration
-domain_name            = "quickstart.hellometropolis.com"
+domain_name            = "metropolis-quickstart.host"
+managed_zone           = "metropolis-quickstart-host"
 
 # SQL Configuration
 sql_user_password      = "ghTzsc4TzLkUPyJe"

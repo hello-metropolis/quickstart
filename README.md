@@ -92,13 +92,14 @@ _Setup the Service Account_
 
 **Update Your DNS Record**
 
-Currently the `terraform.tfvars` file has `domain_name` set to:
+Currently the `terraform.tfvars` file has `domain_name` and `managed_zone` set to:
 
 ```
-domain_name = "quickstart.hellometropolis.com"
+domain_name            = "metropolis-quickstart.host"
+managed_zone           = "metropolis-quickstart-host"
 ```
 
-This is configured in such a way so that if `Cloud DNS` is configured, subdomains will be created for each sandbox environment.  So for example `feature-123.quickstart.hellometropolis.com` could go to a sandbox with the id `feature-123`.
+This is configured in such a way so that if `Cloud DNS` is configured, subdomains will be created for each sandbox environment.  So for example `feature-123.metropolis-quickstart.host` could go to a sandbox with the id `feature-123`.
 
 Alternatively, you can remove the quickstart DNS record configuration from the Metropolis Quickstart example by making adjustments to the `infrastructure/terraform/deployment.tf` file.
 
