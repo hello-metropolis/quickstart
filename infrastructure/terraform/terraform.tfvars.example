@@ -1,0 +1,27 @@
+# GitHub Configuration
+github_clone_url       = "git@github.com:hello-metropolis/quickstart.git"
+github_repo            = "hello-metropolis/quickstart"
+
+# Metropolis Configuration
+metropolis_public_key  = "e779ba8351e6"
+metropolis_private_key = "2b38e2e22298395cb845818a7dcafe46"
+
+# Google Cloud Configuration
+project                = "hello-metropolis"
+credentials_file       = "gcp-service-account.json"
+
+# Google Container Repo Configuration
+gcr_email              = "ken@kenmazaika.com"
+docker_repo_frontend   = "gcr.io/hello-metropolis/metropolis-quickstart/frontend"
+docker_repo_backend    = "gcr.io/hello-metropolis/metropolis-quickstart/backend"
+
+# Kubernetes Configuration
+cluster_name           = "metropolis-quickstart-sandbox-a4ef834"
+zone                   = "us-west1-c"
+region                 = "us-west1"
+
+# Domain Configuration
+domain_name            = "quickstart.hellometropolis.com"
+
+# SQL Configuration
+sql_user_password      = "ghTzsc4TzLkUPyJe"
