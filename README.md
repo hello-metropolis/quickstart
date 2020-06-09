@@ -25,21 +25,27 @@ API AJAX commands can be proxied from the react front-end to the backend because
 
 ## Getting Started
 
-**Step 1**, click the _Fork_ button and fork the repository to your GitHub account.
+### Step 1 – Fork the Project
 
-**Step 2**, copy the _Clone or Download_ URL and clone the repository on your computer.
+Click the _Fork_ button and fork the repository to your GitHub account.
+
+### Step 2 – Clone the Project
+
+Copy the _Clone or Download_ URL and clone the repository on your computer.
 
 ```
 git clone [GITHUB URL]
 ```
+### Step 3 – Configure Terraform
 
-**Step 3**, built a template for the `terraform.tfvars` by copying the example in place.
+
+Build a template for the `terraform.tfvars` by copying the example in place.
 
 ```
 cp infrastructure/terraform/terraform.tfvars.example infrastructure/terraform/terraform.tfvars
 ```
 
-**Step 4**, populate this file with properties below.
+Then this file with properties below.
 
 **GitHub Configuration**
 
