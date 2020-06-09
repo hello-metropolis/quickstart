@@ -49,7 +49,7 @@ resource "metropolis_component" "clone_source" {
   workspace_id      = metropolis_workspace.primary.id
 
   component_did_mount = [
-    "curl https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/github/clone.sh | DEPLOY_KEY=\"`gcloud secrets versions access latest --secret=github_deploy_key`\" GITHUB_URL=\"${var.github_clone_url}\" REF=\"$_METROPOLIS_PLACEHOLDER.METROPOLIS_REF\" sh",
+    "curl -sS https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/github/clone.sh | DEPLOY_KEY=\"`gcloud secrets versions access latest --secret=github_deploy_key`\" GITHUB_URL=\"${var.github_clone_url}\" REF=\"$_METROPOLIS_PLACEHOLDER.METROPOLIS_REF\" sh",
     ". /metropolis-utils/.clone"
   ]
   
@@ -95,7 +95,7 @@ resource "metropolis_component" "helm_releases" {
   workspace_id      = metropolis_workspace.primary.id
 
   component_did_mount = [
-    "curl https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/helm/install.sh | sh",
+    "curl -sS https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/helm/install.sh | sh",
     ". /metropolis-utils/.metropolis-utils"
   ]
 
@@ -143,7 +143,7 @@ resource "metropolis_component" "rake_database" {
   workspace_id      = metropolis_workspace.primary.id
 
   component_did_mount = [
-    "curl https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/cloud_sql_proxy/install.sh | sh",
+    "curl -sS https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/cloud_sql_proxy/install.sh | sh",
     ". /metropolis-utils/.metropolis-utils && PROXY_INSTANCE_NAME=\"$_METROPOLIS_ASSET.DATABASE_INSTANCE_NAME\" SANDBOX_ID=\"$_METROPOLIS_PLACEHOLDER.SANDBOX_ID\" sh backend/lib/docker/setup-cloudproxy-and-mount.sh"
   ]
 
@@ -178,7 +178,7 @@ resource "metropolis_component" "dns" {
   placeholders = ["SANDBOX_ID" ]
 
   component_did_mount = [
-    "curl https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/terraform/install.sh | sh",
+    "curl -sS https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/terraform/install.sh | sh",
     ". /metropolis-utils/.metropolis-utils"
   ]
 
