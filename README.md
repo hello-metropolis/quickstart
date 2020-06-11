@@ -198,6 +198,8 @@ cd backend
 rm config/master.key && rm config/credentials.yml.enc && EDITOR=vim rails credentials:edit
 ```
 
+Press escape, :wq to save and quit the file.
+
 **Third**, store the contents of this file in the `Google Cloud Secret Manager`:
 
 
