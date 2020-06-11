@@ -1,15 +1,15 @@
 provider "google" {
   version     = "3.5.0"
   credentials = "gcp-service-account.json"
-  project     = "hello-metropolis"
+  project     = var.project_id
 }
 
 
 data "terraform_remote_state" "terraform-state" {
   backend = "gcs"
   config = {
-    bucket      = "hello-metropolis-terraform-state"
-    prefix      = "metropolis-quickstart-managed-state"
+    bucket      = var.bucket_name
+    prefix      = "metropolis-quickstart-managed-state-${var.sandbox_id}"
     credentials = "gcp-service-account.json"
   }
 }
