@@ -76,7 +76,7 @@ _Setup the Service Account_
 * Choose the option for `Service Accounts`.
 * Click the option to `+ Create Service Account`.
 * Give the service account a name, perhaps `Metropolis Quickstart`.
-* Grant the account permissions for `Owner`.
+* Grant the account permissions for `Owner` and `Security Admin`.
 * Click the button to `Create Key (optional)`.
 * Download the JSON file to the location `infrastructure/terraform/gcp-service-account.json`.
 
@@ -121,9 +121,12 @@ _Setup `Cloud Build` Service Account Permissions_
 * Allow CloudBuild to execute jobs against your Kubernetes cluster by running the following command (and replacing the `EMAIL` with the email you saw above):
 
 ```
-gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/container.clusterAdmin"
+gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/roles/secretmanager.secretAccessor"
 ```
 
+```
+gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/container.developer"
+```
 
 **Google Container Registry**
 
@@ -192,7 +195,7 @@ cd backend
 **Second**, run the following command to create the `master.key` file locally.
 
 ```
-rm config/master.key && EDITOR=vim rails credentials:edit
+rm config/master.key && rm config/credentials.yml.enc && EDITOR=vim rails credentials:edit
 ```
 
 **Third**, store the contents of this file in the `Google Cloud Secret Manager`:
@@ -203,6 +206,14 @@ rm config/master.key && EDITOR=vim rails credentials:edit
 cat config/master.key | gcloud beta secrets create "metropolis-quickstart-rails-master-key" --data-file - --replication-policy "automatic"
 ```
 
+**Fourth**, commit and push the encrypted `credentials.yml.enc` file to GitHub.
+
+```
+git add --all
+git commit -am "Ran rails credentials:edit to regenerate encoded credentials yaml file."
+git push origin master
+```
+
 **Add a secure random password for SQL**
 
 If you have `openssl` and you want to use that to generate a password, the command `openssl rand -hex 12` can generate a new unique password for you to use.  Otherwise, feel free to use any password you wish, and replace `SQL_PASSWORD` with your actual password.
@@ -210,6 +221,37 @@ If you have `openssl` and you want to use that to generate a password, the comma
 ```
 echo -n SQL_PASSWORD | gcloud beta secrets create "metropolis-quickstart-database-password" --data-file - --replication-policy "automatic"
 ```
+
+**Generate a Deploy Key** and add it to the secrets manager.
+
+Generate an SSH key pair
+
+```
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f github_deploy_key
+```
+
+Visit your GitHub repository.
+
+* Click the **Settings** option.
+* Click the **Deploy Keys** option.
+* Click the **Add a deploy key** button.
+* Run the following command to output your public key.
+
+```
+cat github_deploy_key.pub
+```
+
+* Copy and paste this into the field with a name.
+* Press the **Add Key** button.
+* Confirm your password.
+
+Add your SSH key to the secrets manager.
+
+```
+cat github_deploy_key | gcloud beta secrets create "github_deploy_key" --data-file - --replication-policy "automatic"
+```
+
+
 
 
 ### Step 7 – Test it out

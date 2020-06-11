@@ -101,14 +101,14 @@ resource "metropolis_component" "helm_releases" {
 
   on_create = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "helm install frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG", 
-    "helm install backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID"
+    "helm install frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
+    "helm install backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
   ]
 
   on_update = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "helm upgrade frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG", 
-    "helm upgrade backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID"
+    "helm upgrade frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
+    "helm upgrade backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
   ]
 
   on_destroy = [

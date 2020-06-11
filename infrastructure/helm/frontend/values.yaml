@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/hello-metropolis/metropolis-quickstart/frontend
+  repository: gcr.io/replace/me
   tag: latest
   pullPolicy: Always
 

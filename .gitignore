@@ -6,4 +6,3 @@ infrastructure/terraform/terraform.tfvars
 infrastructure/terraform/terraform.tfstate*
 infrastructure/terraform/terraform.tfstate*
 infrastructure/.DS_Store
-backend/config/credentials.yml.enc
