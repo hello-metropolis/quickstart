@@ -80,6 +80,51 @@ _Setup the Service Account_
 * Click the button to `Create Key (optional)`.
 * Download the JSON file to the location `infrastructure/terraform/gcp-service-account.json`.
 
+_Setup `gcloud` command line utility_
+
+We will use the `gcloud` CLI, so configure the project to be the one you created by first authenticating the CLI to the service account you just created.
+
+```
+gcloud auth activate-service-account --key-file gcp-service-account.json
+```
+
+Then switch the project to match the service account.  Run:
+
+```
+gcloud projects list
+```
+
+It may prompt you if you want to enable APIs in your account.  If it does, give your account permission to do so.  Then run this command to switch to the project in the CLI (replacing `PROJECT_ID` with your project id).
+
+```
+gcloud config set project PROJECT_ID
+```
+
+Run the following command to see which account your `gcloud` is authenticated against.
+
+```
+gcloud auth list
+```
+
+Then add the role of `roles/container.clusterAdmin` to the email address of the account.  Change the `EMAIL` to the email address of the account you're authenticated as.
+
+```
+gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/container.clusterAdmin"
+```
+
+_Setup `Cloud Build` Service Account Permissions_
+
+> Cloud Build will automatically run `gcloud` with a service account that is configured for the `Cloud Build API`.  Configure this service account with to have access to the kubernetes cluster by doing the following.
+
+* Visit the [Cloud Build API](https://console.cloud.google.com/marketplace/product/google/cloudbuild.googleapis.com) and enable it in your account.
+* Visit the [Cloud Build Settings](https://console.cloud.google.com/cloud-build/settings/service-account) and find the `Service account email` and copy this email address.
+* Allow CloudBuild to execute jobs against your Kubernetes cluster by running the following command (and replacing the `EMAIL` with the email you saw above):
+
+```
+gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/container.clusterAdmin"
+```
+
+
 **Google Container Registry**
 
 * Update the `gcr_email` to include your email address.
@@ -103,9 +148,17 @@ This is configured in such a way so that if `Cloud DNS` is configured, subdomain
 
 Alternatively, you can remove the quickstart DNS record configuration from the Metropolis Quickstart example by making adjustments to the `infrastructure/terraform/deployment.tf` file.
 
-**SQL User Password**
+**Terraform State in Google Storage Bucket**
 
-Terraform will provision a CloudSQL instance with the user `metropolis` and the password you set in this file.  Change the `sql_user_password` field to be a unique and secure password for your installation.
+We will store the Terraform state data in Google Cloud Storage, but we will need to create a bucket.  Run the following command to create a Google Cloud Storage bucket, replacing `PROJECT_NAME` with the name name of your project.
+
+
+```
+gsutil mb gs://PROJECT_NAME-project-terraform-state
+```
+
+Update your `terraform.tfvars` file to set the `terraform_state_bucket` variable to the name of the bucket you created above.
+
 
 ### Step 4 – Configure Metropolis Runtime Engine
 
@@ -122,7 +175,44 @@ Terraform will provision a CloudSQL instance with the user `metropolis` and the 
 * Visit the [Metropolis GitHub Application](https://github.com/apps/hello-metropolis) and install the application to the `quickstart` repository you just forked.  This will allow Metropolis to use the `Deployment API` on behalf of your application when configured with GitHub's installation id.
 * Confirm the flow to set the `notification-engine/github-application-installation-id` account setting to the value of the github application id.
 
-### Step 6 – Test it out
+### Step 6 – Configure Secrets
+
+Some secrets will need to be shared between your Terraform, your CI servers, and your sandbox environments.  The quickstart environment uses [Google Cloud Secret Manager](https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets) to do just this.
+
+A few commands need to be executed to store values in the secret manager to share them across the environments that need them in a secure way.
+
+**Add the Rails Master Key** to the secrets manager.
+
+**First**, regenerate your `master.key` encryption file.  Navigate to the folder of your backend project.
+
+```
+cd backend
+```
+
+**Second**, run the following command to create the `master.key` file locally.
+
+```
+rm config/master.key && EDITOR=vim rails credentials:edit
+```
+
+**Third**, store the contents of this file in the `Google Cloud Secret Manager`:
+
+
+
+```
+cat config/master.key | gcloud beta secrets create "metropolis-quickstart-rails-master-key" --data-file - --replication-policy "automatic"
+```
+
+**Add a secure random password for SQL**
+
+If you have `openssl` and you want to use that to generate a password, the command `openssl rand -hex 12` can generate a new unique password for you to use.  Otherwise, feel free to use any password you wish, and replace `SQL_PASSWORD` with your actual password.
+
+```
+echo -n SQL_PASSWORD | gcloud beta secrets create "metropolis-quickstart-database-password" --data-file - --replication-policy "automatic"
+```
+
+
+### Step 7 – Test it out
 
 #### Provision Infrastructure
 
@@ -131,6 +221,8 @@ Navigate to the `infrastructure/terraform` folder and run:
 ```
 terraform apply
 ```
+
+It may give you errors the first few times you run it.  Each time, it will prompt you to enable APIs on your account in the error messages.  Follow the links in the error messages to add access to these APIs.
 
 And enter `yes` when prompted if this is correct.  This will provision your environment.
 

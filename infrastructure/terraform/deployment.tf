@@ -186,7 +186,7 @@ resource "metropolis_component" "dns" {
     "cd ./infrastructure/shell/dns-records", 
     "gcloud secrets versions access latest --secret metropolis-quickstart-gcp-service-account > gcp-service-account.json", 
     "terraform init", 
-    "terraform apply -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' --auto-approve",
+    "terraform apply -var 'manged_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' --auto-approve",
     "echo 'METRO_INFO: {\"url\": \"$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}\"}'"
   ]
 
@@ -194,7 +194,7 @@ resource "metropolis_component" "dns" {
     "cd ./infrastructure/shell/dns-records", 
     "gcloud secrets versions access latest --secret metropolis-quickstart-gcp-service-account > gcp-service-account.json", 
     "terraform init", 
-    "terraform destroy -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' --auto-approve"
+    "terraform destroy  -var 'manged_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' --auto-approve"
   ]
 
   skip = [ "update" ]

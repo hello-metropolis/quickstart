@@ -30,5 +30,5 @@ resource "google_sql_database_instance" "master" {
 resource "google_sql_user" "users" {
   name     = "metropolis"
   instance = google_sql_database_instance.master.name
-  password = var.sql_user_password
+  password = data.google_secret_manager_secret_version.metropolis_quickstart_database_password.secret_data
 }

@@ -49,29 +49,29 @@ curl --request DELETE "http://localhost:4857/api/tweets/1"
 
 The following command will build the docker image for this project.  Replace `kenmazaika` with your handle.
 
-**Build** the docker image, with:
+**Build** the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker build . -t kenmazaika/metropolis-quickstart-backend:latest
+docker build . -t PROJECT_ID/metropolis-quickstart-backend:latest
 ```
 
-**Run** the docker image, with:
+**Run** the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker run -p 8081:8081 kenmazaika/metropolis-quickstart-backend:latest
+docker run -p 8081:8081 PROJECT_ID/metropolis-quickstart-backend:latest
 ```
 
-**Shell** into the docker image, with:
+**Shell** into the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker run -ti kenmazaika/metropolis-quickstart-backend /bin/bash
+docker run -ti PROJECT_ID/metropolis-quickstart-backend /bin/bash
 ```
 
-**Push** to GCR.io, with:
+**Push** to GCR.io, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker tag kenmazaika/metropolis-quickstart-backend:latest gcr.io/hello-metropolis/metropolis-quickstart/backend:latest
-docker push gcr.io/hello-metropolis/metropolis-quickstart/backend:latest
+docker tag PROJECT_ID/metropolis-quickstart-backend:latest gcr.io/PROJECT_ID/metropolis-quickstart/backend:latest
+docker push gcr.io/PROJECT_ID/metropolis-quickstart/backend:latest
 ```
 
 

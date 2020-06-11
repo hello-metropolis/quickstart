@@ -5,30 +5,32 @@
 
 The following command will build the docker image for this project.  Replace `kenmazaika` with your handle.
 
-**Build** the docker image, with:
+**Build** the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker build . -t kenmazaika/metropolis-quickstart-frontend:latest
+docker build . -t PROJECT_ID/metropolis-quickstart-frontend:latest
 ```
 
-**Run** the docker image, with:
+**Run** the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker run -p 8082:80 kenmazaika/metropolis-quickstart-frontend:latest
+docker run -p 8082:80 PROJECT_ID/metropolis-quickstart-frontend:latest
 ```
 
-**Shell** into the docker image, with:
+**Shell** into the docker image, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
 
 ```
-docker run -ti kenmazaika/metropolis-quickstart-frontend /bin/sh
+docker run -ti PROJECT_ID/metropolis-quickstart-frontend /bin/sh
 cd /usr/share/nginx/html
 ```
 
-**Push** to GCR.io, with:
+**Push** to GCR.io, by running this command and replacing `PROJECT_ID` with the project id you're using on Google Cloud Platform.
+
 
 ```
-docker tag kenmazaika/metropolis-quickstart-frontend:latest gcr.io/hello-metropolis/metropolis-quickstart/frontend:latest
-docker push gcr.io/hello-metropolis/metropolis-quickstart/frontend:latest
+docker tag PROJECT_ID/metropolis-quickstart-frontend:latest gcr.io/PROJECT_ID/metropolis-quickstart/frontend:latest
+
+docker push gcr.io/PROJECT_ID/metropolis-quickstart/frontend:latest
 ```
 
 

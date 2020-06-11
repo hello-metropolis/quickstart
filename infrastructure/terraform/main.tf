@@ -17,13 +17,15 @@ variable "metropolis_public_key" {}
 variable "metropolis_private_key" {}
 variable "zone" {}
 variable "region" {}
-variable "sql_user_password" {}
 variable "gcr_email" {}
 variable "docker_repo_frontend" {}
 variable "docker_repo_backend" {}
 variable "github_clone_url" {}
 variable "domain_name" {}
+variable "managed_zone" {}
 variable "github_repo" {}
+variable "terraform_state_bucket" {}
+
 
 ###############################################################################
 # Providers
@@ -74,7 +76,7 @@ provider "metropolis" {
 data "terraform_remote_state" "terraform-state" {
   backend = "gcs"
   config = {
-    bucket  = "metropolis-quickstart-terraform-state"
+    bucket  = var.terraform_state_bucket
     prefix  = "sandbox"
     credentials = var.credentials_file
   }

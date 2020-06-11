@@ -7,13 +7,13 @@ metropolis_public_key  = "e779ba8351e6"
 metropolis_private_key = "2b38e2e22298395cb845818a7dcafe46"
 
 # Google Cloud Configuration
-project                = "hello-metropolis"
+project                = "metropolis-quickstart"
 credentials_file       = "gcp-service-account.json"
 
 # Google Container Repo Configuration
 gcr_email              = "ken@kenmazaika.com"
-docker_repo_frontend   = "gcr.io/hello-metropolis/metropolis-quickstart/frontend"
-docker_repo_backend    = "gcr.io/hello-metropolis/metropolis-quickstart/backend"
+docker_repo_frontend   = "gcr.io/metropolis-quickstart/metropolis-quickstart/frontend"
+docker_repo_backend    = "gcr.io/metropolis-quickstart/metropolis-quickstart/backend"
 
 # Kubernetes Configuration
 cluster_name           = "metropolis-quickstart-sandbox-a4ef834"
@@ -24,5 +24,5 @@ region                 = "us-west1"
 domain_name            = "metropolis-quickstart.host"
 managed_zone           = "metropolis-quickstart-host"
 
-# SQL Configuration
-sql_user_password      = "ghTzsc4TzLkUPyJe"
+# Terraform State
+terraform_state_bucket = "metropolis-quickstart-project-terraform-state"
