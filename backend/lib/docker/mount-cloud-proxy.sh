@@ -5,7 +5,7 @@ echo "> Mounting secrets"
 
 DIR="`pwd`/config"
 
-DB_HOSTNAME="/tmp/csql/$PROXY_INSTANCE_NAME"
+DB_HOSTNAME="/tmp/database-socket"
 DB_USERNAME="metropolis"
 DB_PASSWORD=`cat /workspace/.metropolis-secrets/metropolis-quickstart-database-credentials/password`
 METROPOLIS_RAILS_MASTER_KEY=`cat /workspace/.metropolis-secrets/metropolis-quickstart-rails-master-key/value`

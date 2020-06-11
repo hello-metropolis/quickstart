@@ -1,18 +1,18 @@
 #!/bin/sh
 
-echo "Setup CloudProxy and Mount Staging"
+echo "Setup CloudProxy and Mount"
 
-echo "> Setting up CloudProxy on $SANDBOX_ID for $PROXY_INSTANCE_NAME"
-mkdir /tmp/csql
-cloud_sql_proxy -dir /tmp/csql  --instances=$PROXY_INSTANCE_NAME &
+echo "> Setting up CloudProxy on $SANDBOX_ID for $PROXY_INSTANCE_NAME on unix:/tmp/database-socket"
+
+cloud_sql_proxy --instances=$PROXY_INSTANCE_NAME=unix:/tmp/database-socket &
+
 echo "> Started Proxy – Waiting for it to boot"
 sleep 4
 echo "> Proxy Setup"
 
 echo "> Mounting staging"
-pwd
-ls
+
 cd ./backend
-SANDBOX_ID=$SANDBOX_ID PROXY_INSTANCE_NAME=$PROXY_INSTANCE_NAME sh ./lib/docker/mount-cloud-proxy.sh
+SANDBOX_ID=$SANDBOX_ID sh ./lib/docker/mount-cloud-proxy.sh
 
 echo "> Mounting completed"

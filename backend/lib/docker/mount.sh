@@ -15,11 +15,5 @@ echo "production:
   username: ${DB_USERNAME}
   password: ${DB_PASSWORD}" > "$DIR/database.yml"
 
-echo "Mounting master key"
-
-
 echo "`cat /kubernetes-secrets/metropolis-quickstart-rails-master-key/value`" > "$DIR/master.key"
-
-cat $DIR/master.key
-
 echo "> Production mounted"

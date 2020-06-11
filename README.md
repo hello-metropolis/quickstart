@@ -128,6 +128,11 @@ gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAc
 gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/container.developer"
 ```
 
+```
+gcloud projects add-iam-policy-binding metropolis-quickstart --member="serviceAccount:EMAIL" --role="roles/cloudsql.admin"
+```
+
+
 **Google Container Registry**
 
 * Update the `gcr_email` to include your email address.
@@ -215,6 +220,16 @@ git add --all
 git commit -am "Ran rails credentials:edit to regenerate encoded credentials yaml file."
 git push origin master
 ```
+
+> **Note** If you ever need to change the credentials, if they are mounted in the
+> Kubernetes pod you will need to rebuild the Kubernetes Secret too.
+>
+> 
+> `terraform taint kubernetes_secret.metropolis_rails_master_key`
+>
+> Will do this command if you need to in the future.  You will only need to do this
+> if you are trying to change this value after Kubernetes cluster is already provisioned.
+
 
 **Add a secure random password for SQL**
 
