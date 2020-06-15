@@ -32,7 +32,7 @@ jobs:
           SANDBOX_ID=`echo "${{ github.head_ref }}" | awk '{ gsub("/refs/heads/", "") ; system( "echo "  $0) }'`
           
           curl -sS http://hellometropolis.com/api/trigger_events -H "Authorization: Bearer $BEARER_TOKEN" -H "Content-Type: application/json" -d \
-            "{\"ref\":\"${{ github.head_ref }}\", \"branch\":\"${{ github.head_ref }}\",\"sha\":\"${GITHUB_SHA}\",\"actor\":\"${GITHUB_ACTOR}\",\"repo\":\"${GITHUB_REPOSITORY}\",\"event_name\":\"pull_request\",\"source\":\"github action\",\"placeholder_values\":{\"DOCKER_TAG\":\"$SANDBOX_ID\",\"SANDBOX_ID\":\"$SANDBOX_ID\",\"METROPOLIS_DEPLOYMENT_NAME\":\"$SANDBOX_ID\"}}"
+            "{\"ref\":\"${{ github.head_ref }}\", \"branch\":\"${{ github.head_ref }}\",\"sha\":\"${GITHUB_SHA}\",\"actor\":\"${GITHUB_ACTOR}\",\"repo\":\"${GITHUB_REPOSITORY}\",\"event_name\":\"pull_request\",\"source\":\"github action\",\"placeholder_values\":{\"DOCKER_TAG\":\"$SANDBOX_ID\",\"METROPOLIS_SANDBOX_ID\":\"$SANDBOX_ID\",\"METROPOLIS_DEPLOYMENT_NAME\":\"$SANDBOX_ID\"}}"
  
           echo "> Finished."
         fi

@@ -56,7 +56,7 @@ resource "metropolis_component" "clone_source" {
 }
 resource "metropolis_component" "docker_build_frontend" {
   name              = "docker-build-frontend"
-  container_name    = "gcr.io/kaniko-project/executor:v0.18.0"
+  container_name    = "gcr.io/kaniko-project/executor:v0.23.0"
   placeholders      = [ "DOCKER_TAG" ]
   workspace_id      = metropolis_workspace.primary.id
   
@@ -72,7 +72,7 @@ resource "metropolis_component" "docker_build_frontend" {
 }
 resource "metropolis_component" "docker_build_backend" {
   name              = "docker-build-backend"
-  container_name    = "gcr.io/kaniko-project/executor:v0.18.0"
+  container_name    = "gcr.io/kaniko-project/executor:v0.23.0"
   placeholders      = [ "DOCKER_TAG" ]
   workspace_id      = metropolis_workspace.primary.id
   
@@ -91,7 +91,7 @@ resource "metropolis_component" "docker_build_backend" {
 resource "metropolis_component" "helm_releases" {
   name              = "helm-deployments"
   container_name    = "gcr.io/cloud-builders/gcloud"
-  placeholders      = [ "SANDBOX_ID", "DOCKER_TAG" ]
+  placeholders      = [ "METROPOLIS_SANDBOX_ID", "DOCKER_TAG" ]
   workspace_id      = metropolis_workspace.primary.id
 
   component_did_mount = [
@@ -101,20 +101,20 @@ resource "metropolis_component" "helm_releases" {
 
   on_create = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "helm install frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
-    "helm install backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
+    "helm install frontend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
+    "helm install backend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
   ]
 
   on_update = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "helm upgrade frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
-    "helm upgrade backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
+    "helm upgrade frontend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID infrastructure/helm/frontend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set image.repository=${var.docker_repo_frontend}", 
+    "helm upgrade backend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID infrastructure/helm/backend/ --set image.tag=$_METROPOLIS_PLACEHOLDER.DOCKER_TAG --set env.RAILS_ENV=production --set env.AFTER_CONTAINER_DID_MOUNT=\"sh lib/docker/mount.sh\" --set env.SANDBOX_ID=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID --set image.repository=${var.docker_repo_backend}"
   ]
 
   on_destroy = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "helm delete frontend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID", 
-    "helm delete backend-$_METROPOLIS_PLACEHOLDER.SANDBOX_ID"
+    "helm delete frontend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID", 
+    "helm delete backend-$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID"
   ]
 
 }
@@ -139,12 +139,12 @@ resource "metropolis_component" "mount_secrets" {
 resource "metropolis_component" "rake_database" {
   name              = "rake-database"
   container_name    = "${var.docker_repo_backend}:$_METROPOLIS_PLACEHOLDER.DOCKER_TAG"
-  placeholders      = [ "SANDBOX_ID" ]
+  placeholders      = [ "METROPOLIS_SANDBOX_ID" ]
   workspace_id      = metropolis_workspace.primary.id
 
   component_did_mount = [
     "curl -sS https://raw.githubusercontent.com/hello-metropolis/metropolis-utils/master/scripts/cloud_sql_proxy/install.sh | sh",
-    ". /metropolis-utils/.metropolis-utils && PROXY_INSTANCE_NAME=\"$_METROPOLIS_ASSET.DATABASE_INSTANCE_NAME\" SANDBOX_ID=\"$_METROPOLIS_PLACEHOLDER.SANDBOX_ID\" sh backend/lib/docker/setup-cloudproxy-and-mount.sh"
+    ". /metropolis-utils/.metropolis-utils && PROXY_INSTANCE_NAME=\"$_METROPOLIS_ASSET.DATABASE_INSTANCE_NAME\" SANDBOX_ID=\"$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID\" sh backend/lib/docker/setup-cloudproxy-and-mount.sh"
   ]
 
   on_create = [
@@ -158,12 +158,12 @@ resource "metropolis_component" "rake_database" {
 resource "metropolis_component" "expose_services" {
   name              = "kubernetes-ingress"
   container_name    = "gcr.io/cloud-builders/gcloud"
-  placeholders      = [ "SANDBOX_ID" ]
+  placeholders      = [ "METROPOLIS_SANDBOX_ID" ]
   workspace_id      = metropolis_workspace.primary.id
 
   on_create = [
     "gcloud container clusters get-credentials ${var.cluster_name} --zone=us-west1", 
-    "DEPLOYMENT_KEY=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID INGRESS_HOST=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name} sh ./infrastructure/shell/install-ingress.sh"
+    "DEPLOYMENT_KEY=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID INGRESS_HOST=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID.${var.domain_name} sh ./infrastructure/shell/install-ingress.sh"
   ]
 
   skip = [ "update", "destroy" ]  
@@ -186,15 +186,15 @@ resource "metropolis_component" "dns" {
     "cd ./infrastructure/shell/dns-records", 
     "gcloud secrets versions access latest --secret metropolis-quickstart-gcp-service-account > gcp-service-account.json", 
     "terraform init", 
-    "terraform apply -var 'managed_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' -var 'sandbox_id=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID' -var 'bucket_name=${var.terraform_state_bucket}' -var 'project_id=${var.project}' --auto-approve",
-    "echo 'METRO_INFO: {\"url\": \"$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}\"}'"
+    "terraform apply -var 'managed_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' -var 'sandbox_id=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID' -var 'bucket_name=${var.terraform_state_bucket}' -var 'project_id=${var.project}' --auto-approve",
+    "echo 'METRO_INFO: {\"url\": \"$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID.${var.domain_name}\"}'"
   ]
 
   on_destroy = [
     "cd ./infrastructure/shell/dns-records", 
     "gcloud secrets versions access latest --secret metropolis-quickstart-gcp-service-account > gcp-service-account.json", 
     "terraform init", 
-    "terraform destroy  -var 'managed_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' -var 'sandbox_id=$_METROPOLIS_PLACEHOLDER.SANDBOX_ID' -var 'bucket_name=${var.terraform_state_bucket}' -var 'project_id=${var.project}' --auto-approve"
+    "terraform destroy  -var 'managed_zone=${var.managed_zone}' -var 'domain=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID.${var.domain_name}' -var 'ip_address=$_METROPOLIS_ASSET.INGRESS_IP_ADDRESS' -var 'sandbox_id=$_METROPOLIS_PLACEHOLDER.METROPOLIS_SANDBOX_ID' -var 'bucket_name=${var.terraform_state_bucket}' -var 'project_id=${var.project}' --auto-approve"
   ]
 
   skip = [ "update" ]
@@ -274,12 +274,7 @@ resource "metropolis_deployment" "master" {
   }
 
   placeholder {
-    name  = "SANDBOX_ID"
-    value = "master"
-  }
-
-  placeholder {
-    name  = "METROPOLIS_BRANCH"
+    name  = "METROPOLIS_SANDBOX_ID"
     value = "master"
   }
 
