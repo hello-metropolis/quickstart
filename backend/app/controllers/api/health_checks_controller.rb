@@ -3,7 +3,7 @@ class Api::HealthChecksController < ApplicationController
         resp = {
           time: Time.now.to_s(:db),
           env: Rails.env.to_s,
-          message: "Metropolis Demo Change x2"
+          message: "Metropolis API"
         }
         render json: resp
       end
