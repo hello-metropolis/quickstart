@@ -59,7 +59,7 @@ class App extends Component {
           <h2>{time}</h2>
         </div>
         <div className="App-body">
-          <h3>Metropolis Quickstart App (x2)</h3>
+          <h3>Metropolis Sandbox</h3>
           <p>
             This is a React frontend that connects to the Ruby on Rails backend ready for deployment using Kubernetes and Terraform.
           </p>
